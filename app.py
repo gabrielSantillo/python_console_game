@@ -162,16 +162,15 @@ def computer_attack(computer_fighter, opponent, user_fighter_life):
     return user_fighter_life
 
 def user_move(user_fighter, computer_fighter_life):
-    fighter = get_user_fighter(user_fighter[0])
     print("\n---- YOUR FIGHTER ----")
-    print("\nName:", fighter[0][2].decode("utf-8"))
-    print("Health:", fighter[0][5])
-    print("Points:", fighter[0][6])
+    print("\nName:", user_fighter[0][2].decode("utf-8"))
+    print("Health:", user_fighter[0][5])
+    print("Points:", user_fighter[0][6])
     print("\n---- MOVES ----\n")
-    print(fighter[0][3], fighter[0][4].decode("utf-8"))
-    print(fighter[1][3], fighter[1][4].decode("utf-8"))
-    print(fighter[2][3], fighter[2][4].decode("utf-8"))
-    print(fighter[3][3], fighter[3][4].decode("utf-8"))
+    print(user_fighter[0][3], user_fighter[0][4].decode("utf-8"))
+    print(user_fighter[1][3], user_fighter[1][4].decode("utf-8"))
+    print(user_fighter[2][3], user_fighter[2][4].decode("utf-8"))
+    print(user_fighter[3][3], user_fighter[3][4].decode("utf-8"))
     move_id = input(
         "\nWhich move do you choose? Choose by their numbers id.\n")
 
@@ -198,8 +197,7 @@ def fight(client_id, user_fighter, opponent, computer_fighter):
             print("Bye.")
             # write here a code that will end the game
     else:
-        fighter = get_user_fighter(user_fighter[0])
-        user_fighter_life = computer_attack(computer_fighter, opponent, fighter[0][5])
+        user_fighter_life = computer_attack(computer_fighter, opponent, user_fighter[0][5])
         fight(client_id, user_fighter, opponent, computer_fighter)
 
 
@@ -227,11 +225,13 @@ def user_selection_fighter(client_id):
     user_selection = input("Chose 1 or 2.\n")
     if (user_selection == '1'):
         user_fighter = create_fighter(client_id)
+        user_fighter = get_user_fighter(user_fighter[0])
         computer_fighter = get_computer_fighter()
         opponent = choose_opponent()
         fight(client_id, user_fighter, opponent, computer_fighter)
     elif (user_selection == '2'):
         user_fighter = pick_fighter(client_id)
+        user_fighter = get_user_fighter(user_fighter[0])
         computer_fighter = get_computer_fighter()
         opponent = choose_opponent()
         fight(client_id, user_fighter, opponent, computer_fighter)
