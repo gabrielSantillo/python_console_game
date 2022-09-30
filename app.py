@@ -1,6 +1,7 @@
 import dbhelpers as db
 from random import randint, random, choice
 
+
 def sign_up():
     print("\n---- SIGN UP ----\n")
     username = input("Username:\n")
@@ -83,17 +84,22 @@ def create_fighter(client_id):
 
     return result
 
+
 def get_user_fighter(fighter_id):
     cursor = db.connect_db()
-    result = db.execute_statement(cursor, 'CALL get_user_fighter_by_fighter_id(?)', [fighter_id])
+    result = db.execute_statement(
+        cursor, 'CALL get_user_fighter_by_fighter_id(?)', [fighter_id])
     db.close_connect(cursor)
     return result
 
+
 def get_move_info(move_id):
     cursor = db.connect_db()
-    result = db.execute_statement(cursor, 'CALL get_all_moves_by_id(?)', [move_id])
+    result = db.execute_statement(
+        cursor, 'CALL get_all_moves_by_id(?)', [move_id])
     db.close_connect(cursor)
     return result
+
 
 def calculate_damage(lower_range, upper_range):
     damage = randint(lower_range, upper_range)
@@ -103,15 +109,17 @@ def calculate_damage(lower_range, upper_range):
 def attack_opponent(damage, computer_fighter):
     computer_fighter_life = computer_fighter[0][4]
     computer_fighter_life = computer_fighter_life - damage
-    if(computer_fighter_life > 0):
+    if (computer_fighter_life > 0):
         return computer_fighter_life
     else:
         computer_fighter_life = 0
         return computer_fighter_life
 
+
 def add_points(client_id, points):
     cursor = db.connect_db()
-    result = db.execute_statement(cursor, 'CALL add_fighter_points(?,?)', [points, client_id])
+    result = db.execute_statement(
+        cursor, 'CALL add_fighter_points(?,?)', [points, client_id])
     db.close_connect(cursor)
     return result[0][0]
 
@@ -122,27 +130,28 @@ def get_computer_fighter():
     db.close_connect(cursor)
     return result
 
+
 def get_random_move(list_of_moves):
     move = choice(list_of_moves)
     return move
 
+
 def calculate_attack(oppononet, damage):
-    if(oppononet == 1):
+    if (oppononet == 1):
         attack = damage - 2
         return attack
-    elif(oppononet == 2):
+    elif (oppononet == 2):
         return damage
-    elif(oppononet == 3):
+    elif (oppononet == 3):
         attack = damage + 2
         return attack
 
+
 def computer_attack(computer_fighter, opponent, user_fighter_life):
-    # the order here is
-    # get the computer fighter lower and uppr range, call the function calculate_damage to return the value of tha damage
     computer_moves = []
     for move in computer_fighter:
         computer_moves.append(move[2])
-    
+
     random_move = get_random_move(computer_moves)
     move_info = get_move_info(random_move)
     lower_range = move_info[0][2]
@@ -150,13 +159,9 @@ def computer_attack(computer_fighter, opponent, user_fighter_life):
     damage = calculate_damage(lower_range, upper_range)
     attack = calculate_attack(opponent, damage)
     user_fighter_life = user_fighter_life - attack
-    # create a function that have opponent as argument to check if the user is weak, fair or strong and do something about it (weak subtract 2 to the attack, fair do nothing with the attack, strong add 2 to
-    # the attack)
-    # create a function that will calculate the damage and update the user health in the db
-    # finally return the user current health
+    return user_fighter_life
 
-
-def fight(client_id, user_fighter, opponent, computer_fighter):
+def user_move(user_fighter, computer_fighter_life):
     fighter = get_user_fighter(user_fighter[0])
     print("\n---- YOUR FIGHTER ----")
     print("\nName:", fighter[0][2].decode("utf-8"))
@@ -167,8 +172,14 @@ def fight(client_id, user_fighter, opponent, computer_fighter):
     print(fighter[1][3], fighter[1][4].decode("utf-8"))
     print(fighter[2][3], fighter[2][4].decode("utf-8"))
     print(fighter[3][3], fighter[3][4].decode("utf-8"))
-    move_id = input("\nWhich move do you choose? Choose by their numbers id.\n")
+    move_id = input(
+        "\nWhich move do you choose? Choose by their numbers id.\n")
 
+    return move_id
+
+
+def fight(client_id, user_fighter, opponent, computer_fighter):
+    move_id = user_move(user_fighter, computer_fighter[0][4])
     move_info = get_move_info(move_id)
     lower_range = move_info[0][2]
     upper_range = move_info[0][3]
@@ -176,20 +187,20 @@ def fight(client_id, user_fighter, opponent, computer_fighter):
     damage = calculate_damage(lower_range, upper_range)
 
     computer_life = attack_opponent(damage, computer_fighter)
-    if(computer_life == 0):
+    if (computer_life == 0):
         print("---- YOU WON ----")
         add_points(client_id, opponent)
         print("\nWanna play again? y/n\n")
         play_again = input("Type y for yes or n to no.")
-        if(play_again == 'y' or play_again == 'Y'):
+        if (play_again == 'y' or play_again == 'Y'):
             user_selection_fighter(client_id)
-        elif(play_again == 'n' or play_again == 'N'):
+        elif (play_again == 'n' or play_again == 'N'):
             print("Bye.")
-            #write here a code that will end the game
+            # write here a code that will end the game
     else:
-        damage = computer_attack(computer_fighter, opponent, fighter[0][5])
-
-
+        fighter = get_user_fighter(user_fighter[0])
+        user_fighter_life = computer_attack(computer_fighter, opponent, fighter[0][5])
+        fight(client_id, user_fighter, opponent, computer_fighter)
 
 
 def choose_opponent():
