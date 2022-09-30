@@ -126,7 +126,17 @@ def get_random_move(list_of_moves):
     move = choice(list_of_moves)
     return move
 
-def computer_attack(computer_fighter, opponent, fighter_id):
+def calculate_attack(oppononet, damage):
+    if(oppononet == 1):
+        attack = damage - 2
+        return attack
+    elif(oppononet == 2):
+        return damage
+    elif(oppononet == 3):
+        attack = damage + 2
+        return attack
+
+def computer_attack(computer_fighter, opponent, user_fighter_life):
     # the order here is
     # get the computer fighter lower and uppr range, call the function calculate_damage to return the value of tha damage
     computer_moves = []
@@ -137,12 +147,13 @@ def computer_attack(computer_fighter, opponent, fighter_id):
     move_info = get_move_info(random_move)
     lower_range = move_info[0][2]
     upper_range = move_info[0][3]
+    damage = calculate_damage(lower_range, upper_range)
+    attack = calculate_attack(opponent, damage)
+    user_fighter_life = user_fighter_life - attack
     # create a function that have opponent as argument to check if the user is weak, fair or strong and do something about it (weak subtract 2 to the attack, fair do nothing with the attack, strong add 2 to
     # the attack)
     # create a function that will calculate the damage and update the user health in the db
     # finally return the user current health
-    user_fighter = get_user_fighter(fighter_id)
-    print(user_fighter)
 
 
 def fight(client_id, user_fighter, opponent, computer_fighter):
@@ -176,7 +187,7 @@ def fight(client_id, user_fighter, opponent, computer_fighter):
             print("Bye.")
             #write here a code that will end the game
     else:
-        damage = computer_attack(computer_fighter, opponent, user_fighter[0])
+        damage = computer_attack(computer_fighter, opponent, fighter[0][5])
 
 
 
