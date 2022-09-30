@@ -46,7 +46,7 @@ def pick_fighter(client_id):
     db.close_connect(cursor)
     if (len(all_fighters) >= 1):
         for fighter in all_fighters:
-            print(fighter[0], ".", fighter[1].decode("utf-8"), "")
+            print(fighter[0], ".", fighter[6].decode("utf-8"), "")
         user_fighter_id = input("\nChoose your fighter by their number.\n")
         for fighter in all_fighters:
             if (str(fighter[0]) == user_fighter_id):
@@ -99,29 +99,14 @@ def calculate_damage(lower_range, upper_range):
     damage = randint(lower_range, upper_range)
     return damage
 
-def get_computer_life():
-    cursor = db.connect_db()
-    result = db.execute_statement(cursor, 'CALL get_computer_fighter()')
-    db.close_connect(cursor)
-    computer_life = result[0][4]
-    return computer_life
 
-def update_computer_life(computer_fighter_life):
-    cursor = db.connect_db()
-    result = db.execute_statement(cursor, 'CALL update_computer_life(?)', [computer_fighter_life])
-    db.close_connect(cursor)
-    computer_life = result[0][0]
-    return computer_life
-
-def attack_opponent(damage):
-    computer_fighter_life = get_computer_life()
+def attack_opponent(damage, computer_fighter):
+    computer_fighter_life = computer_fighter[0][4]
     computer_fighter_life = computer_fighter_life - damage
     if(computer_fighter_life > 0):
-        computer_fighter_life = update_computer_life(computer_fighter_life)
         return computer_fighter_life
     else:
         computer_fighter_life = 0
-        update_computer_life(computer_fighter_life)
         return computer_fighter_life
 
 def add_points(client_id, points):
@@ -160,7 +145,7 @@ def computer_attack(computer_fighter, opponent, fighter_id):
     print(user_fighter)
 
 
-def fight(client_id, user_fighter, opponent):
+def fight(client_id, user_fighter, opponent, computer_fighter):
     fighter = get_user_fighter(user_fighter[0])
     print("\n---- YOUR FIGHTER ----")
     print("\nName:", fighter[0][2].decode("utf-8"))
@@ -179,7 +164,7 @@ def fight(client_id, user_fighter, opponent):
 
     damage = calculate_damage(lower_range, upper_range)
 
-    computer_life = attack_opponent(damage)
+    computer_life = attack_opponent(damage, computer_fighter)
     if(computer_life == 0):
         print("---- YOU WON ----")
         add_points(client_id, opponent)
@@ -191,7 +176,6 @@ def fight(client_id, user_fighter, opponent):
             print("Bye.")
             #write here a code that will end the game
     else:
-        computer_fighter = get_computer_fighter()
         damage = computer_attack(computer_fighter, opponent, user_fighter[0])
 
 
@@ -221,12 +205,14 @@ def user_selection_fighter(client_id):
     user_selection = input("Chose 1 or 2.\n")
     if (user_selection == '1'):
         user_fighter = create_fighter(client_id)
+        computer_fighter = get_computer_fighter()
         opponent = choose_opponent()
-        fight(client_id, user_fighter, opponent)
+        fight(client_id, user_fighter, opponent, computer_fighter)
     elif (user_selection == '2'):
         user_fighter = pick_fighter(client_id)
+        computer_fighter = get_computer_fighter()
         opponent = choose_opponent()
-        fight(client_id, user_fighter, opponent)
+        fight(client_id, user_fighter, opponent, computer_fighter)
     else:
         print("Wrong number. Please type only 1 or 2.")
         user_selection_fighter(client_id)
