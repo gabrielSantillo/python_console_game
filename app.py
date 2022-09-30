@@ -190,7 +190,7 @@ def fight(client_id, user_fighter, opponent, computer_fighter):
         print("---- YOU WON ----")
         add_points(client_id, opponent)
         print("\nWanna play again? y/n\n")
-        play_again = input("Type y for yes or n to no.")
+        play_again = input("Type y for yes or n to no.\n")
         if (play_again == 'y' or play_again == 'Y'):
             user_selection_fighter(client_id)
         elif (play_again == 'n' or play_again == 'N'):
@@ -239,6 +239,8 @@ def user_selection_fighter(client_id):
         print("Wrong number. Please type only 1 or 2.")
         user_selection_fighter(client_id)
 
+    return True
+
 
 while (True):
     print("\n1. Sign up?")
@@ -246,9 +248,13 @@ while (True):
     user_selection = input("Chose 1 or 2.\n")
     if (user_selection == '1'):
         client_id = sign_up()
-        user_selection_fighter(client_id)
+        end_game = user_selection_fighter(client_id)
+        if(end_game):
+            break
     elif (user_selection == '2'):
         client_id = log_in()
-        user_selection_fighter(client_id)
+        end_game = user_selection_fighter(client_id)
+        if(end_game):
+            break
     else:
         print("Chose the number 1 to Sign Up or 2 to Log In.")
