@@ -28,3 +28,5 @@ call get_all_moves_by_id(1);
 call update_computer_life(10);
 
 call get_computer_fighter();
+
+call get_fighter_info(1);

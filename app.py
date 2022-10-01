@@ -2,17 +2,21 @@ from compileall import compile_file
 import dbhelpers as db
 from random import randint, random, choice
 
-
+# this function sign in the user
 def sign_up():
     print("\n---- SIGN UP ----\n")
     username = input("Username:\n")
     password = input("Password:\n")
+    # db connection
     cursor = db.connect_db()
+    # getting the result form the db
     result = db.execute_statement(
         cursor, 'CALL add_client(?,?)', [username, password])
+    # closing the connection
     db.close_connect(cursor)
+    # checking to see if the result is has a length of one
     if (len(result) == 1):
-        # printing the id by looping the result
+        # return the id
         for id in result:
             return id[0]
     # if it empty, show a message to the user
@@ -20,14 +24,18 @@ def sign_up():
         print("Your username or password is incorrect. Try again.")
         return
 
-
+# funtion that will log in the user
 def log_in():
     print("\n---- LOG IN ----\n")
+    # getting the username and password's user
     username = input("Username:\n")
     password = input("Password:\n")
+    # connecting to the db
     cursor = db.connect_db()
+    # getting the result form the db
     result = db.execute_statement(
         cursor, 'CALL select_user(?,?)', [username, password])
+    # closing the db connection
     db.close_connect(cursor)
     # checking if the result lenght is equal to one, which it has content inside
     if (len(result) == 1):
@@ -39,58 +47,80 @@ def log_in():
         print("Your username or password is incorrect. Try again.")
         return
 
-
+# this function will pick an existing fighter
 def pick_fighter(client_id):
     print("\n---- PICKING A FIGHTER ----\n")
+    # connection to the db
     cursor = db.connect_db()
+    # getting all fighters back
     all_fighters = db.execute_statement(
         cursor, 'CALL get_fighter_by_id(?)', [client_id])
+    # closing the db connection
     db.close_connect(cursor)
     
+    # checking to see if the lenght is at least 1
     if (len(all_fighters) >= 1):
+        # looping the response to print fighter by fighter
         for fighter in all_fighters:
             print(fighter[0], ".", fighter[6].decode("utf-8"), "")
+        # asking which fighter the user will pick
         user_fighter_id = input("\nChoose your fighter by their number.\n")
+        # connecting to the db
         cursor = db.connect_db()
+        # getting back only the fighter the user picked
         fighter_info = db.execute_statement(
         cursor, 'CALL get_fighter_info(?)', [int(user_fighter_id)])
+        # closing the connection
         db.close_connect(cursor)
+        # return the chosen fighter
         return fighter_info
-
+    # if the lenght is not at least 1, print a message and call a function that will create a fighter
     else:
         print("You doesn't have any fighter yet.")
         create_fighter(client_id)
 
-
+# this function wil create a fighter
 def create_fighter(client_id):
     print("\n---- CREATING A FIGHTER ----\n")
+    # getting the name of the fighter
     name = input("Name of the fighter:\n")
+    # connecting to the db
     cursor = db.connect_db()
+    # getting back all moves available to the user to pick
     all_moves = db.execute_statement(cursor, 'CALL get_all_moves()')
+    # closing the connection
     db.close_connect(cursor)
+    # printing all moves in the terminal
     for move in all_moves:
         print("\n", move[0], ".", "Attack name:", move[1].decode(
             "utf-8"), "Lower Damage:", move[2], "Higher Damage:", move[3])
-
+    # asking the user which 4 moves he will pick
     print("From 1 to 10 select your 4 moves.")
     first_move = input("First move: ")
     second_move = input("Second move: ")
     third_move = input("Third move: ")
     four_move = input("Four move: ")
-
+    
+    # closing the connection
     cursor = db.connect_db()
+    # adding the fighter in the db
     result = db.execute_statement(cursor, 'CALL add_fighter(?,?,?,?,?,?)', [client_id, int(
         first_move), int(second_move), int(third_move), int(four_move), name])
     db.close_connect(cursor)
 
+    # returning the fighter
     return result
 
-
+# this function will get the user fighter
 def get_user_fighter(client_id, fighter_id):
+    # connecting to the db
     cursor = db.connect_db()
+    # getting the fighter back
     result = db.execute_statement(
         cursor, 'CALL get_fighter_by_fighter_client(?,?)', [client_id, fighter_id])
+    # closing the db
     db.close_connect(cursor)
+    # adding into variables all fighter's information
     move_one = result[0][2]
     move_two = result[0][3]
     move_three = result[0][4]
@@ -99,6 +129,7 @@ def get_user_fighter(client_id, fighter_id):
     fighter_health = result[0][7]
     fighter_points = result[0][8]
 
+    # setting a fighter dictionary with these variables
     fighter = {
         'id': fighter_id,
         'client_id': client_id,
@@ -111,22 +142,27 @@ def get_user_fighter(client_id, fighter_id):
         'fighter_points': fighter_points
     }
 
+    # returnig the fighter dictionary
     return fighter
 
-
+# this function will get the move's information
 def get_move_info(move_id):
+    # connecting to the db
     cursor = db.connect_db()
+    # getting the move back by its id
     result = db.execute_statement(
         cursor, 'CALL get_all_moves_by_id(?)', [move_id])
+    # closing the connection
     db.close_connect(cursor)
+    # returning the result
     return result
 
-
+# this function will calculete the damaga by a random number between the lower range and upper range
 def calculate_damage(lower_range, upper_range):
     damage = randint(lower_range, upper_range)
     return damage
 
-
+# this function will attack the computer fighter
 def attack_opponent(damage, computer_life):
     computer_fighter_life = computer_life
     computer_fighter_life = computer_fighter_life - damage
