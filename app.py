@@ -46,16 +46,16 @@ def pick_fighter(client_id):
     all_fighters = db.execute_statement(
         cursor, 'CALL get_fighter_by_id(?)', [client_id])
     db.close_connect(cursor)
+    
     if (len(all_fighters) >= 1):
         for fighter in all_fighters:
             print(fighter[0], ".", fighter[6].decode("utf-8"), "")
         user_fighter_id = input("\nChoose your fighter by their number.\n")
-        for fighter in all_fighters:
-            if (str(fighter[0]) == user_fighter_id):
-                return fighter
-            else:
-                print("Choose between the numbers displayed.")
-                pick_fighter(client_id)
+        cursor = db.connect_db()
+        fighter_info = db.execute_statement(
+        cursor, 'CALL get_fighter_info(?)', [int(user_fighter_id)])
+        db.close_connect(cursor)
+        return fighter_info
 
     else:
         print("You doesn't have any fighter yet.")
@@ -292,7 +292,7 @@ def user_selection_fighter(client_id):
         fight(client_id, user_fighter, opponent, computer_fighter)
     elif (user_selection == '2'):
         user_fighter = pick_fighter(client_id)
-        user_fighter = get_user_fighter(client_id, user_fighter[0])
+        user_fighter = get_user_fighter(client_id, user_fighter[0][0])
         computer_fighter = get_computer_fighter()
         opponent = choose_opponent()
         fight(client_id, user_fighter, opponent, computer_fighter, user_fighter['fighter_health'], computer_fighter['computer_fighter_life'])
