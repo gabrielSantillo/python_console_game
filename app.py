@@ -305,44 +305,54 @@ def user_move(user_fighter, user_life, computer_life):
 
 # this function will start the fight
 def fight(client_id, user_fighter, opponent, computer_fighter, user_life, computer_life):
-    # calling a function that will 
+    # calling a function that will get the move id
     move_id = user_move(user_fighter, user_life, computer_life)
+    # calling a function that will get the move info based on its id
     move_info = get_move_info(move_id)
+    # setting these variables to the lower and upper range
     lower_range = move_info[0][2]
     upper_range = move_info[0][3]
 
+    # calculating the damage
     damage = calculate_damage(lower_range, upper_range)
-
+    # calculating the computer life after being attacked
     computer_life = attack_opponent(damage, computer_life)
+    # if the computer life is zero print a message to the user that we has won
     if (computer_life == 0):
         print("---- YOU WON ----")
+        # calling a function that will add points to the user's fighter
         add_points(client_id, opponent)
+        # asking the user if he wanna play again and based on that, initiate the game again or kill the application
         print("\nWanna play again? y/n\n")
         play_again = input("Type y for yes or n to no.\n")
         if (play_again == 'y' or play_again == 'Y'):
             user_selection_fighter(client_id)
         elif (play_again == 'n' or play_again == 'N'):
             print("Bye.")
+    # if the user life is more than zero
     else:
+        # call a function that will attack the user fighter
         user_fighter_life = computer_attack(computer_fighter, opponent, user_life)
+        # if the user life is equal to zero print a message to the user that has lost
         if(user_fighter_life == 0):
             print("\n---- YOU LOST ----\n")
+            # asking the user if he wanna play again and based on that, initiate the game again or kill the application
             print("\nWanna play again? y/n\n")
             play_again = input("Type y for yes or n to no.\n")
             if (play_again == 'y' or play_again == 'Y'):
                 user_selection_fighter(client_id)
             elif (play_again == 'n' or play_again == 'N'):
                 print("Bye.")
+        # if the user life is more than zero, call the function that will start the user attack again
         fight(client_id, user_fighter, opponent, computer_fighter, user_fighter_life, computer_life)
 
-
+# this function will display the user opponents and based on the user selection will return a number that represents the opponent
 def choose_opponent():
     print("\n ---- CHOOSE YOUR OPPONENT ---- \n")
     print("1. Weak opponent. If you win will award you 1 point.")
     print("2. Fair opponent. If you win will award you 2 points.")
     print("3. Strong opponent. If you win will award you 4 points.")
     opponent = input("\nWhich one do you choose?\n")
-
     if (opponent == '1'):
         return 1
     elif (opponent == '2'):
@@ -353,41 +363,61 @@ def choose_opponent():
         print("Choose a number between 1, 2 or 3. Try again.")
         choose_opponent()
 
-
+# this function will ask the user if he wants to create a fighter or pick an existing one
 def user_selection_fighter(client_id):
     print("\n1. Create a new fighter?")
     print("2. Pick an existing fighter?\n")
     user_selection = input("Chose 1 or 2.\n")
+    # if the user selection is 1, call the function that will create a fighter
     if (user_selection == '1'):
+        # creating the user fighter
         user_fighter = create_fighter(client_id)
-        user_fighter = get_user_fighter(client_id, user_fighter[0])
+        # getting the user fighter
+        user_fighter = get_user_fighter(client_id, user_fighter[0][0])
+        # getting the computer fighter
         computer_fighter = get_computer_fighter()
+        # getting the user opponent
         opponent = choose_opponent()
+        # calling the function that will start the fight
         fight(client_id, user_fighter, opponent, computer_fighter)
     elif (user_selection == '2'):
+        # picking an existing fighter
         user_fighter = pick_fighter(client_id)
+        # getting the user fighter
         user_fighter = get_user_fighter(client_id, user_fighter[0][0])
+        # getting the computer fighter
         computer_fighter = get_computer_fighter()
+        # getting the user opponent
         opponent = choose_opponent()
+        # calling the function that will start the fight
         fight(client_id, user_fighter, opponent, computer_fighter, user_fighter['fighter_health'], computer_fighter['computer_fighter_life'])
+    # id the user types an different number or caracter, call the function again
     else:
         print("Wrong number. Please type only 1 or 2.")
         user_selection_fighter(client_id)
 
+    # this return will only be attempt if the user wanted to end the application when asked
     return True
 
-
+# this while true start the application
 while (True):
     print("\n1. Sign up?")
     print("2. Log in?\n")
+    # getting the user selection after asking him if we wants to sign in or log in
     user_selection = input("Chose 1 or 2.\n")
+    # if the user types 1, call the function that will sign in him
     if (user_selection == '1'):
+        # calling the sign in function
         client_id = sign_up()
+        # getting the result if the user want to end the application and then breaking it
         end_game = user_selection_fighter(client_id)
         if(end_game):
             break
+    # if the user types 2, call the function that will log in him
     elif (user_selection == '2'):
+        # calling the log in function
         client_id = log_in()
+        # getting the result if the user want to end the application and then breaking it
         end_game = user_selection_fighter(client_id)
         if(end_game):
             break
