@@ -165,26 +165,39 @@ def calculate_damage(lower_range, upper_range):
 # this function will attack the computer fighter
 def attack_opponent(damage, computer_life):
     computer_fighter_life = computer_life
+    # calculating the computer lige after being attacked
     computer_fighter_life = computer_fighter_life - damage
+    # checking to see if the computer life is more than 0
     if (computer_fighter_life > 0):
+        # if yes return its life
         return computer_fighter_life
+    # if not, set to zero and return its life
     else:
         computer_fighter_life = 0
         return computer_fighter_life
 
-
+# if the user fighter win, add points to the fighter
 def add_points(client_id, points):
+    # db connection
     cursor = db.connect_db()
+    # getting the information sent back
     result = db.execute_statement(
         cursor, 'CALL add_fighter_points(?,?)', [points, client_id])
+    # closing the connection
     db.close_connect(cursor)
+    # returning the user's points
     return result[0][0]
 
-
+# this function will get the computer fighter
 def get_computer_fighter():
+    # db connection
     cursor = db.connect_db()
+    # getting back the computer fighter
     result = db.execute_statement(cursor, 'CALL get_computer_fighter_info()')
+    # closing db connection
     db.close_connect(cursor)
+
+    # setting variables if the computer fighter information
     computer_fighter_id = result[0][0]
     move_one = result[0][1]
     move_two = result[0][2]
@@ -193,6 +206,7 @@ def get_computer_fighter():
     computer_fighter_name = result[0][5].decode("utf-8")
     computer_fighter_life = result[0][6]
 
+    # setting a dictionary with the computer's fighter information
     computer_fighter = {
         'id': computer_fighter_id,
         'move_one': move_one,
@@ -202,53 +216,74 @@ def get_computer_fighter():
         'computer_fighter_name': computer_fighter_name,
         'computer_fighter_life': computer_fighter_life
     }
+    
+    # returning the computer fighter
     return computer_fighter
 
-
+# getting a random move based on a given list and returning this move
 def get_random_move(list_of_moves):
     move = choice(list_of_moves)
     return move
 
-
+# calculating the computer attack based on its number
 def calculate_attack(oppononet, damage):
+    # if the computer is weak, subtract 2 from their attack
     if (oppononet == 1):
         attack = damage - 2
         return attack
+    # if the computer is fair, do nothing with the attack
     elif (oppononet == 2):
         return damage
+    # if the computer is strong, add 2 from their attack
     elif (oppononet == 3):
         attack = damage + 2
         return attack
 
-
+# this function will make the computer attack the user fighter
 def computer_attack(computer_fighter, opponent, user_fighter_life):
+    # adding all computer moves to a list
     computer_moves = []
     computer_moves.append(computer_fighter['move_one'])
     computer_moves.append(computer_fighter['move_two'])
     computer_moves.append(computer_fighter['move_three'])
     computer_moves.append(computer_fighter['move_four'])
 
+    # calling a function that will return a random move
     random_move = get_random_move(computer_moves)
+    # calling a function that will get all move information
     move_info = get_move_info(random_move)
+    # setting this variables to has the computer's lower and upper damages
     lower_range = move_info[0][2]
     upper_range = move_info[0][3]
+    # calculating the damage
     damage = calculate_damage(lower_range, upper_range)
+    # calculating the attack
     attack = calculate_attack(opponent, damage)
+    # updating the user fighter life
     user_fighter_life = user_fighter_life - attack
 
+    # if the user life is more than zero return its life
     if(user_fighter_life > 0):
         return user_fighter_life
+    # if note, set to zero its life then return its life
     else:
         user_fighter_life = 0
         return user_fighter_life
 
+# this function will get the user fighter move based on the fighter id
 def get_user_fighter_moves(fighter_id):
+    # db connection
     cursor = db.connect_db()
+    # getting back the fighter moves
     result = db.execute_statement(cursor, 'CALL get_user_fighter_by_fighter_id(?)', [fighter_id])
+    # closing db connection
     db.close_connect(cursor)
+    # returning the result
     return result
 
+# this function will print the user info
 def user_move(user_fighter, user_life, computer_life):
+    # calling the function that will get the user fighter info to be printed
     user_moves = get_user_fighter_moves(user_fighter['id'])
     print("\n---- YOUR FIGHTER ----")
     print("\nName:", user_fighter['fighter_name'])
@@ -261,13 +296,16 @@ def user_move(user_fighter, user_life, computer_life):
     print(user_moves[1][0], user_moves[1][1].decode("utf-8"))
     print(user_moves[2][0], user_moves[2][1].decode("utf-8"))
     print(user_moves[3][0], user_moves[3][1].decode("utf-8"))
+    # asking the user which move he will pick to attack
     move_id = input(
         "\nWhich move do you choose? Choose by their numbers id.\n")
 
+    # returning this move id picked
     return move_id
 
-
+# this function will start the fight
 def fight(client_id, user_fighter, opponent, computer_fighter, user_life, computer_life):
+    # calling a function that will 
     move_id = user_move(user_fighter, user_life, computer_life)
     move_info = get_move_info(move_id)
     lower_range = move_info[0][2]
