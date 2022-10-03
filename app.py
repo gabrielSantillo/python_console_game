@@ -317,8 +317,13 @@ def user_move(user_fighter, user_life, computer_life):
     move_id = input(
         "\nWhich move do you choose? Choose by their numbers id.\n")
 
-    # returning this move id picked
-    return move_id
+    move_id_input = check_if_is_int(move_id)
+    if(move_id_input):
+        # returning this move id picked
+        return move_id
+    else:
+        move_id = user_move(user_fighter, user_life, computer_life)
+        return move_id
 
 # this function will start the fight
 def fight(client_id, user_fighter, opponent, computer_fighter, user_life, computer_life):
