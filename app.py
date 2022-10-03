@@ -47,6 +47,16 @@ def log_in():
         print("Your username or password is incorrect. Try again.")
         return
 
+def check_if_is_int(argument, client_id):
+    try:
+        int(argument)
+    except ValueError:
+        print("\n Choose only numbers between the given options.")
+        pick_fighter(client_id)
+
+    return argument
+        
+
 # this function will pick an existing fighter
 def pick_fighter(client_id):
     print("\n---- PICKING A FIGHTER ----\n")
@@ -65,20 +75,19 @@ def pick_fighter(client_id):
             print(fighter[0], ".", fighter[6].decode("utf-8"), "")
         # asking which fighter the user will pick
         user_fighter_id = input("\nChoose your fighter by their number.\n")
+        
+        #Checking to see if the user input is a number
+        user_fighter_id = check_if_is_int(user_fighter_id, client_id)
+
         # connecting to the db
         cursor = db.connect_db()
-        # getting back only the fighter the user picked
-
-        if(type(user_fighter_id) == int):
-            fighter_info = db.execute_statement(
-            cursor, 'CALL get_fighter_info(?)', [int(user_fighter_id)])
-            # closing the connection
-            db.close_connect(cursor)
-        else:
-            print("Please, choose only numbers between the given options.")
-            pick_fighter(client_id)
-        # return the chosen fighter
+        # getting back only the fighter the user picked    
+        fighter_info = db.execute_statement(
+        cursor, 'CALL get_fighter_info(?)', [int(user_fighter_id)])
+        # closing the connection
+        db.close_connect(cursor)
         return fighter_info
+        
     # if the lenght is not at least 1, print a message and call a function that will create a fighter
     else:
         print("You doesn't have any fighter yet.")
