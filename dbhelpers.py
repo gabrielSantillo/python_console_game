@@ -1,17 +1,16 @@
-from tkinter import EXCEPTION
 import dbcreds
 import mariadb
 
 
 def connect_db():
     try:
-        conn = mariadb.connect(password=dbcreds.pasword, user=dbcreds.user,
+        conn = mariadb.connect(password=dbcreds.password, user=dbcreds.user,
                                host=dbcreds.host, port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
         return cursor
     except mariadb.OperationalError as error:
         print("Operational ERROR:", error)
-    except EXCEPTION as error:
+    except Exception as error:
         print("Unknown ERROR:", error)
 
 

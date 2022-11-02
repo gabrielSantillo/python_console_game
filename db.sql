@@ -107,7 +107,7 @@ CREATE TABLE `fighter` (
   CONSTRAINT `fighter_FK_2` FOREIGN KEY (`move_two`) REFERENCES `move` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fighter_FK_3` FOREIGN KEY (`move_three`) REFERENCES `move` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fighter_FK_4` FOREIGN KEY (`move_four`) REFERENCES `move` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -116,7 +116,7 @@ CREATE TABLE `fighter` (
 
 LOCK TABLES `fighter` WRITE;
 /*!40000 ALTER TABLE `fighter` DISABLE KEYS */;
-INSERT INTO `fighter` VALUES (1,4,2,5,10,7,'fighter one',20,0),(2,4,1,2,3,4,'fighter 2',20,0),(4,16,5,9,4,3,'fighter 3',20,1),(5,6,5,8,1,6,'fighter 4',20,0);
+INSERT INTO `fighter` VALUES (1,4,2,5,10,7,'fighter one',20,0),(2,4,1,2,3,4,'fighter 2',20,0),(4,16,5,9,4,3,'fighter 3',20,1),(5,6,5,8,1,6,'fighter 4',20,0),(6,4,4,5,7,9,'testing',20,0),(7,4,5,9,7,1,'testing',20,0);
 /*!40000 ALTER TABLE `fighter` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,6 +290,47 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_computer_fighter_info` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_computer_fighter_info`()
+begin
+	select cf.id, cf.move_one, cf.move_two, cf.move_three, cf.move_four, cf.name, cf.health 
+	from computer_fighter cf;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_fighter_by_fighter_client` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fighter_by_fighter_client`(client_id_input int unsigned, fighter_id_input int unsigned)
+begin
+	select f.id, f.client_id, f.move_one, f.move_two, f.move_three, f.move_four, f.name, f.health, f.points 
+	from fighter f
+	where f.client_id = client_id_input and f.id = fighter_id_input;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `get_fighter_by_id` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -311,6 +352,27 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_fighter_info` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fighter_info`(fighter_id_input int unsigned)
+begin
+	select f.id, f.client_id, f.move_one, f.move_two, f.move_three, f.move_four, f.name, f.health, f.points 
+	from fighter f
+	where f.id = fighter_id_input;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `get_user_fighter_by_fighter_id` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -321,7 +383,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_fighter_by_fighter_id`(fighter_id_input int unsigned)
 begin
-	select f.id, f.client_id, f.name, m.id, m.name, f.health, f.points
+	select m.id, m.name
 	from move m
 	inner join fighter f on m.id = f.move_one or m.id = f.move_two or m.id = f.move_three or m.id = f.move_four 
 	where f.id = fighter_id_input;
@@ -386,4 +448,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-30 13:57:20
+-- Dump completed on 2022-11-02 13:26:53
